@@ -62,6 +62,24 @@ def _affine(input_var, new_size, scope=None):
         return tf.nn.bias_add(tf.matmul(input_var, weights), bias)
 
 
+def _tt_affine(input_var, input_modes, output_modes, tensor_ranks, scope=None):
+    """Gets an affine transform where we represent the weight matrix in the
+    tt-format.
+
+    Args:
+        input_var: input to the layer, can either be [batch_size, num_features]
+            or [batch_size, *input_modes]. If the latter we reshape.
+        input_modes: shape of the expected input tensors.
+        output_modes: shape of expected output tensors.
+        tensor_ranks: ranks of the decomposed matrix.
+        scope: scope for operations.
+
+    Returns:
+        output of the layer.
+    """
+    pass
+
+
 def get_mlp(num_hiddens=1024, nonlin=tf.nn.relu, scope=None):
     """Gets a standard feedforward model to compare"""
     with tf.variable_scope(scope or 'mlp') as scope:
