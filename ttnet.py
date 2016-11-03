@@ -4,6 +4,8 @@ import os
 import numpy as np
 import tensorflow as tf
 
+from ops import binary_connect
+
 from rnndatasets import sequentialmnist as sm
 
 
@@ -152,13 +154,13 @@ def get_mlp(num_hiddens=1024, nonlin=tf.nn.relu, scope=None):
                 FLAGS.batch_size, FLAGS.num_epochs, [1024])
             images, labels = train
 
-        hiddens = nonlin(_affine(images, num_hiddens, 'input'))
+        hiddens = nonlin(_affine(images, num_hiddens, 'input'), min_=0.0)
         # hiddens = tf.nn.dropout(hiddens, 0.5)
         logits = _affine(hiddens, 10, 'output')
 
         scope.reuse_variables()
 
-        test_hiddens = nonlin(_affine(test[0], num_hiddens, 'input'))
+        test_hiddens = nonlin(_affine(test[0], num_hiddens, 'input'), min_=0.0)
         test_logits = _affine(test_hiddens, 10, 'output')
 
     return logits, labels, test_logits, test[1]
@@ -220,6 +222,9 @@ def main(_):
         train_out, train_labels, test_out, test_labels = get_mlp()
     elif FLAGS.model == 'tt':
         train_out, train_labels, test_out, test_labels = get_ttnet()
+    elif FLAGS.model == 'bc':
+        train_out, train_labels, test_out, test_labels = get_mlp(
+            nonlin=binary_connect, num_hiddens=100)
     else:
         raise NotImplementedError('have not done {}'.format(FLAGS.model))
 
